@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "string.h"
+#include "UDP_server.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -29,6 +30,7 @@
 #include "netif/etharp.h"
 #include "lwip/netif.h"
 #include "lwip/timeouts.h"
+#include "lwip/ip_addr.h"
 #if LWIP_DHCP
 #include "lwip/dhcp.h"
 #endif
@@ -112,9 +114,17 @@ int main(void)
   MX_ICACHE_Init();
   /* USER CODE BEGIN 2 */
   lwip_init();
+  udpServer_init();
   Netif_Config();
   udp_led_server_init(); // <-- Add this line to start listening on UDP port 5000
   /* USER CODE END 2 */
+  udpServer_init();
+
+  pcb = get_pcb_by_port(RC_Port);
+  ip_addr_t PC_IP;
+  IP_ADDR4(&PC_IP, 192,0,0,1);
+  RC_Send_Blank(pcb, PC_IP, 1);
+
 
   /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
   BspCOMInit.BaudRate   = 115200;
