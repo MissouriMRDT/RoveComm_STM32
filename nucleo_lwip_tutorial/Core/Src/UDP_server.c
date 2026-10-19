@@ -23,7 +23,7 @@ void udpServer_init(void)
 
     if(err == ERR_OK)
     {
-        //udp_recv(upcb, udp_receive_callback, NULL);
+        udp_recv(upcb, RC_receive_callback, NULL);
     }
     else
     {
@@ -48,4 +48,34 @@ err_t RC_Send_Blank(struct udp_pcb *pcb, ip_addr_t *send_IP, uint16_t data_id){
 	err_t err = udp_sendto(pcb, p, send_IP, RC_Port);
 	pbuf_free(p);
 	return err;
+}
+
+static void RC_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const ip_addr_t *addr, u16_t port){
+
+	RC_header_t hdr;
+	RC_header_t hdr_raw;
+
+	pbuf_copy_partial(p, &hdr_raw, sizeof(RC_header_t),0);
+
+	hdr.version =hdr_raw.version;
+	hdr.Data_ID = ntohs(hdr_raw.Data_ID);
+	hdr.Count = ntohs(hdr_raw.Count);
+	hdr.Data_type = ntohs(hdr_raw.Data_type);
+
+	if(hdr.Data_ID <=6){
+		// rovecomm standard commands
+	switch(hdr.Data_ID){
+	case 1:
+		RC_Send_Blank(upcb, addr,2);
+	case 3:
+	case 4:
+
+
+	}}
+	else{
+		//main.c specific commands
+	}
+
+
+
 }

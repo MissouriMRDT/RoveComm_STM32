@@ -122,7 +122,7 @@ int main(void)
 
   pcb = get_pcb_by_port(RC_Port);
   ip_addr_t PC_IP;
-  IP_ADDR4(&PC_IP, 192,0,0,1);
+  IP_ADDR4(&PC_IP, 192,0,0,1); // computer IP ---TODO TEMP
   RC_Send_Blank(pcb, PC_IP, 1);
 
 
