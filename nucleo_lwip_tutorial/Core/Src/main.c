@@ -33,6 +33,18 @@
 #include "lwip/ip_addr.h"
 #if LWIP_DHCP
 #include "lwip/dhcp.h"
+#include "lwip/udp.h"
+
+
+#include "lwip/udp.h"
+#include "lwip/pbuf.h"
+#include "stdio.h"
+#include "lwip/api.h"
+#include "lwip/sys.h"
+#include "lwip/ip_addr.h"
+#include "lwip/init.h"
+#include "lwip/def.h"
+#include <string.h>
 #endif
 /* USER CODE END Includes */
 
@@ -120,10 +132,6 @@ int main(void)
   /* USER CODE END 2 */
   udpServer_init();
 
-  pcb = get_pcb_by_port(RC_Port);
-  ip_addr_t PC_IP;
-  IP_ADDR4(&PC_IP, 192,0,0,1); // computer IP ---TODO TEMP
-  RC_Send_Blank(pcb, PC_IP, 1);
 
 
   /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
