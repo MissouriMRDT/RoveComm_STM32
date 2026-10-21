@@ -126,9 +126,9 @@ int main(void)
   MX_ICACHE_Init();
   /* USER CODE BEGIN 2 */
   lwip_init();
-  udpServer_init();
+
   Netif_Config();
-  udp_led_server_init(); // <-- Add this line to start listening on UDP port 5000
+  //udp_led_server_init(); // <-- Add this line to start listening on UDP port 5000
   /* USER CODE END 2 */
   udpServer_init();
 

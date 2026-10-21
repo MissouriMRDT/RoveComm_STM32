@@ -24,7 +24,7 @@ void udpServer_init(void)
 
     if(err == ERR_OK)
     {
-        udp_recv(upcb, RC_receive_callback, NULL);
+        //udp_recv(upcb, RC_receive_callback, NULL);
     }
     else
     {
