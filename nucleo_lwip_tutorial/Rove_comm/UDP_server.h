@@ -8,6 +8,7 @@
 #include "lwip/udp.h"
 #define RC_Version 0x01
 #define RC_Port 11000
+#define maxSubscriber 14
 
 
 /*typedef struct {
@@ -27,7 +28,11 @@ typedef struct {
 } RC_header_t;
 #pragma pack(pop)
 
+extern ip_addr_t substribers[14];
+
 void udpServer_init(void);
-err_t RC_Send_Blank(struct udp_pcb *pcb, ip_addr_t *send_IP, uint16_t data_id);
+err_t RC_Send_Blank(struct udp_pcb *pcb, const ip_addr_t *send_IP, uint16_t data_id);
 void RC_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const ip_addr_t *addr, u16_t port);
+void add_subscriber(const ip_addr_t *addr);
+void remove_subscriber(const ip_addr_t *addr);
 #endif

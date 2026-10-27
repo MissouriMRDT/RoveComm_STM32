@@ -12,6 +12,8 @@
 
 
 
+ip_addr_t substribers[14];
+ip_addr_t Zero_IP;
 
 
 void udpServer_init(void)
@@ -23,6 +25,7 @@ void udpServer_init(void)
 
     ip_addr_t myIPADDR;
     IP_ADDR4(&myIPADDR,192,168,2,110);
+    IP_ADDR4(&Zero_IP,0,0,0,0);
     err = udp_bind(upcb, &myIPADDR, 11000);
 
     if(err == ERR_OK)
@@ -35,7 +38,7 @@ void udpServer_init(void)
     }
 }
 
-err_t RC_Send_Blank(struct udp_pcb *pcb, ip_addr_t *send_IP, uint16_t data_id){
+err_t RC_Send_Blank(struct udp_pcb *pcb, const ip_addr_t *send_IP, uint16_t data_id){
 	//size of header
 	size_t pack_bytes =sizeof(RC_header_t);
 	//creation of the buffer being sent
@@ -68,26 +71,52 @@ void RC_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const 
 	hdr.Data_ID = ntohs(hdr_raw.Data_ID);
 	hdr.Count = ntohs(hdr_raw.Count);
 	hdr.Data_type = hdr_raw.Data_type;
-	if(hdr.Data_ID>0){
-		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
-	}
-	if(hdr.Data_ID<100){
-		HAL_GPIO_WritePin(LED_YELLOW_GPIO_Port, LED_YELLOW_Pin, 1);
-	}
+
 
 
 
 		// rovecomm standard commands
 	switch(hdr.Data_ID){
 	case 1:
-		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
 		RC_Send_Blank(upcb, addr,2);
 	case 3:
+		//subscribe IP
+		add_subscriber(addr);
 	case 4:
-
+		//un subscribe IP
+		remove_subscriber(addr);
 
 	}
 
+
+
+}
+
+void add_subscriber(const ip_addr_t *addr){
+	//check for duplicate
+	for (int i =0; i<maxSubscriber; i++){
+		if (ip_addr_cmp(&substribers[i], addr)){
+			return;
+		}
+	}
+
+	//find open spot
+	for (int i=0; i<maxSubscriber; i++){
+		if(ip_addr_cmp(&substribers[i], &Zero_IP)){
+			ip_addr_copy(substribers[i], *addr);
+			return;
+		}
+	}
+
+
+}
+void remove_subscriber(const ip_addr_t *addr){
+	//temp
+	for (int i =0; i<maxSubscriber; i++){
+			if (ip_addr_cmp(&substribers[i], addr)){
+				ip_addr_copy(substribers[i], Zero_IP);
+			}
+		}
 
 
 }
