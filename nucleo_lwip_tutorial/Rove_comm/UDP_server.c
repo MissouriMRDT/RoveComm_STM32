@@ -14,12 +14,12 @@
 
 ip_addr_t substribers[14];
 ip_addr_t Zero_IP;
-
+struct udp_pcb *upcb;
 
 void udpServer_init(void)
 {
 
-    struct udp_pcb *upcb;
+
     err_t err;
     upcb = udp_new();
 
@@ -79,12 +79,16 @@ void RC_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const 
 	switch(hdr.Data_ID){
 	case 1:
 		RC_Send_Blank(upcb, addr,2);
+		break;
 	case 3:
 		//subscribe IP
 		add_subscriber(addr);
+		break;
+
 	case 4:
 		//un subscribe IP
 		remove_subscriber(addr);
+		break;
 
 	}
 
@@ -104,6 +108,7 @@ void add_subscriber(const ip_addr_t *addr){
 	for (int i=0; i<maxSubscriber; i++){
 		if(ip_addr_cmp(&substribers[i], &Zero_IP)){
 			ip_addr_copy(substribers[i], *addr);
+
 			return;
 		}
 	}
@@ -111,12 +116,39 @@ void add_subscriber(const ip_addr_t *addr){
 
 }
 void remove_subscriber(const ip_addr_t *addr){
-	//temp
+	//searches for IP in array
 	for (int i =0; i<maxSubscriber; i++){
 			if (ip_addr_cmp(&substribers[i], addr)){
 				ip_addr_copy(substribers[i], Zero_IP);
+				HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+
 			}
 		}
 
 
 }
+
+void Send_subscriber( uint16_t data_id){
+
+	size_t pack_bytes =sizeof(RC_header_t);
+		//creation of the buffer being sent
+		struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, (uint16_t)pack_bytes, PBUF_RAM);
+
+	RC_header_t hdr;
+		hdr.version =0x19;
+		hdr.Data_ID = htons(data_id);
+		hdr.Count = htons(0);
+		hdr.Data_type = 0;
+		//adding the header into the buffer no payload for this send
+		memcpy((uint8_t *)p->payload, &hdr, pack_bytes);
+		for (int i =0; i<maxSubscriber; i++){
+			if(!ip_addr_cmp(&substribers[i], &Zero_IP)){
+				HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+				udp_sendto(upcb, p, &substribers[i], RC_Port);
+		}}
+		pbuf_free(p);
+
+}
+
+
+void RC_write(uint16_t data_id){Send_subscriber(data_id);}
