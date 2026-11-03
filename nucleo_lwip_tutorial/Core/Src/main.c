@@ -442,7 +442,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if (htim->Instance == TIM1) // Replace TIMx with your timer, e.g., TIM1
     {
 
-    	RC_write(7);
+    	RC_write_blank(7);
+    	RC_write_u8(8,1,7);
+    	RC_write_8(9,1,-13);
+    	RC_write_u16(10,1,300);
+    	RC_write_16(11,1,-330);
+    	RC_write_u32(12,1,33000);
+    	RC_write_32(13,1,-35000);
+    	RC_write_char(20,1,'h');
         // Code to run every 1 second (e.g., toggle an LED)
     }
 }

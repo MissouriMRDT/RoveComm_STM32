@@ -49,12 +49,20 @@ err_t RC_Send_Blank(struct udp_pcb *pcb, const ip_addr_t *send_IP, uint16_t data
 void RC_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const ip_addr_t *addr, u16_t port);
 void add_subscriber(const ip_addr_t *addr);
 void remove_subscriber(const ip_addr_t *addr);
-void Send_subscriber( uint16_t data_id);
+void Send_subscriber(uint16_t data_id, uint16_t data_length, uint8_t data_size,uint8_t data_type, const void *data);
 
 //for none
-void RC_write(uint16_t data_id);
+void RC_write_blank(uint16_t data_id);
 // for single
-
+void RC_write_u8(uint16_t data_id, uint16_t data_length, uint8_t data);
+void RC_write_8(uint16_t data_id, uint16_t data_length, int8_t data);
+void RC_write_16(uint16_t data_id, uint16_t data_length, int16_t data);
+void RC_write_u16(uint16_t data_id, uint16_t data_length, uint16_t data);
+void RC_write_32(uint16_t data_id, uint16_t data_length, int32_t data);
+void RC_write_u32(uint16_t data_id, uint16_t data_length, uint32_t data);
+void RC_write_float(uint16_t data_id, uint16_t data_length, float data);
+void RC_write_double(uint16_t data_id, uint16_t data_length, double data);
+void RC_write_char(uint16_t data_id, uint16_t data_length, char data);
 //for multiple
 
 #endif
