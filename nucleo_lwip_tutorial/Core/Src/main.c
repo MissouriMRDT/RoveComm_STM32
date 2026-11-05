@@ -61,6 +61,7 @@ COM_InitTypeDef BspCOMInit;
 ETH_HandleTypeDef heth;
 
 TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
 extern struct netif gnetif;
@@ -73,6 +74,7 @@ static void MPU_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ICACHE_Init(void);
 static void MX_TIM1_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 static void Netif_Config(void);
 
@@ -117,10 +119,13 @@ int main(void)
   MX_GPIO_Init();
   MX_ICACHE_Init();
   MX_TIM1_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   lwip_init();
   Netif_Config();
   HAL_TIM_Base_Start_IT(&htim1);
+  HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_1); // Captures the total period
+  HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_2); // Captures the high pulse width
   //udp_led_server_init(); // <-- Add this line to start listening on UDP port 5000
   //TODO add rovecomm init
   udpServer_init();
@@ -348,6 +353,80 @@ static void MX_TIM1_Init(void)
 }
 
 /**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_SlaveConfigTypeDef sSlaveConfig = {0};
+  TIM_IC_InitTypeDef sConfigIC = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 249;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 65535;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_IC_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sSlaveConfig.SlaveMode = TIM_SLAVEMODE_RESET;
+  sSlaveConfig.InputTrigger = TIM_TS_TI1FP1;
+  sSlaveConfig.TriggerPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  sSlaveConfig.TriggerPrescaler = TIM_ICPSC_DIV1;
+  sSlaveConfig.TriggerFilter = 0;
+  if (HAL_TIM_SlaveConfigSynchro(&htim3, &sSlaveConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
+  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
+  sConfigIC.ICFilter = 0;
+  if (HAL_TIM_IC_ConfigChannel(&htim3, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_FALLING;
+  sConfigIC.ICSelection = TIM_ICSELECTION_INDIRECTTI;
+  if (HAL_TIM_IC_ConfigChannel(&htim3, &sConfigIC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -439,18 +518,44 @@ static void MX_GPIO_Init(void)
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    if (htim->Instance == TIM1) // Replace TIMx with your timer, e.g., TIM1
+    if (htim->Instance == TIM1)
     {
 
-    	RC_write_blank(7);
-    	RC_write_u8(8,1,7);
-    	RC_write_8(9,1,-13);
-    	RC_write_u16(10,1,300);
-    	RC_write_16(11,1,-330);
-    	RC_write_u32(12,1,33000);
-    	RC_write_32(13,1,-35000);
-    	RC_write_char(20,1,'h');
-        // Code to run every 1 second (e.g., toggle an LED)
+//    	RC_write_blank(7);
+    	RC_write_u8(12,7);
+//    	RC_write_8(9,-13);
+//    	RC_write_u16(10,300);
+//    	RC_write_16(11,-330);
+//    	RC_write_u32(12,33000);
+//    	RC_write_32(13,-35000);
+//    	RC_write_float(19,10.3); //maybe working weired rounding idk
+//    	RC_write_char(20,'h');
+    	uint8_t arr[3]={5,6,7};
+    	RC_write_u8_arr(8,3,arr);
+
+    	int16_t arr16[3]={-200,-300,-400};
+    	RC_write_16_arr(10,3,arr16);
+
+//
+//    	uint32_t period = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
+//    	uint32_t pulse_width = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_2);
+//
+//    	float absolute_angle = 0.0f;
+//
+//    	// Prevent divide-by-zero if the encoder is unplugged or initializing
+//    	if (period > 0) {
+//    	    // REV Encoder ranges from 1 µs (0 deg) to 1024 µs (360 deg)
+//    	    // We calculate duty cycle and scale it across 360 degrees
+//    	    float duty_cycle = (float)pulse_width / (float)period;
+//
+//    	    absolute_angle = duty_cycle * 360.0f;
+//
+//    	}
+//    	RC_write_float(10,absolute_angle);
+
+
+
+
     }
 }
 

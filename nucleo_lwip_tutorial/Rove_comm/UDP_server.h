@@ -54,15 +54,24 @@ void Send_subscriber(uint16_t data_id, uint16_t data_length, uint8_t data_size,u
 //for none
 void RC_write_blank(uint16_t data_id);
 // for single
-void RC_write_u8(uint16_t data_id, uint16_t data_length, uint8_t data);
-void RC_write_8(uint16_t data_id, uint16_t data_length, int8_t data);
-void RC_write_16(uint16_t data_id, uint16_t data_length, int16_t data);
-void RC_write_u16(uint16_t data_id, uint16_t data_length, uint16_t data);
-void RC_write_32(uint16_t data_id, uint16_t data_length, int32_t data);
-void RC_write_u32(uint16_t data_id, uint16_t data_length, uint32_t data);
-void RC_write_float(uint16_t data_id, uint16_t data_length, float data);
-void RC_write_double(uint16_t data_id, uint16_t data_length, double data);
-void RC_write_char(uint16_t data_id, uint16_t data_length, char data);
+void RC_write_u8(uint16_t data_id, uint8_t data);
+void RC_write_8(uint16_t data_id, int8_t data);
+void RC_write_16(uint16_t data_id, int16_t data);
+void RC_write_u16(uint16_t data_id,  uint16_t data);
+void RC_write_32(uint16_t data_id,  int32_t data);
+void RC_write_u32(uint16_t data_id,  uint32_t data);
+void RC_write_float(uint16_t data_id, float data);
+void RC_write_double(uint16_t data_id, double data);
+void RC_write_char(uint16_t data_id, char data);
 //for multiple
+void RC_write_u8_arr(uint16_t data_id, uint16_t data_length, uint8_t data[]);
+void RC_write_8_arr(uint16_t data_id, uint16_t data_length, int8_t data[]);
+void RC_write_16_arr(uint16_t data_id, uint16_t data_length, int16_t data[]);
+void RC_write_u16_arr(uint16_t data_id, uint16_t data_length, uint16_t data[]);
+void RC_write_32_arr(uint16_t data_id, uint16_t data_length, int32_t data[]);
+void RC_write_u32_arr(uint16_t data_id, uint16_t data_length, uint32_t data[]);
+void RC_write_float_arr(uint16_t data_id, uint16_t data_length, float data[]);
+void RC_write_double_arr(uint16_t data_id, uint16_t data_length, double data[]);
+void RC_write_char_arr(uint16_t data_id, uint16_t data_length, char data[]);
 
 #endif
