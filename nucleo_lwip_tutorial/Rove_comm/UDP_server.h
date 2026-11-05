@@ -30,6 +30,9 @@ typedef struct {
 #pragma pack(pop)
 
 typedef struct {
+	uint8_t  Data_type;
+	uint16_t Count;
+	union {
 	uint8_t from_uint8[RC_maxPayload/sizeof(uint8_t)];
 	int8_t from_int8[RC_maxPayload/sizeof(int8_t)];
 	int16_t from_int16[RC_maxPayload/sizeof(int16_t)];
@@ -39,6 +42,7 @@ typedef struct {
 	float from_float[RC_maxPayload/sizeof(float)];
 	double from_double[RC_maxPayload/sizeof(double)];
 	char from_char[RC_maxPayload/sizeof(char)];
+	};
 
 } RC_payload_t;
 

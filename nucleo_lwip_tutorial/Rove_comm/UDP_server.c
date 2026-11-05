@@ -156,15 +156,16 @@ void Send_subscriber(uint16_t data_id, uint16_t data_length, uint8_t data_size,u
 		case 2:{
 			uint16_t val[data_length];
 			memcpy(val, data, sizeof(uint16_t)*data_length);
-			for(uint8_t i=0; i<data_length; i++){
+			for(uint16_t i=0; i<data_length; i++){
 				val[i] = htons(val[i]);}
 			memcpy((uint8_t *)p->payload + sizeof(RC_header_t), val, data_size*data_length);
 			break;}
 		case 4:{
-			int32_t val32;
-			memcpy(&val32, data, sizeof(int32_t)*data_length);
-			val32 = htonl(val32);
-			memcpy((uint8_t *)p->payload + sizeof(RC_header_t), &val32, data_size*data_length);
+			uint32_t val[data_length];
+			memcpy(val, data, sizeof(uint32_t)*data_length);
+			for(uint16_t i=0; i<data_length; i++){
+			val[i]=htonl(val[i]);}
+			memcpy((uint8_t *)p->payload + sizeof(RC_header_t), val, data_size*data_length);
 			break;}
 		case 8:
 
@@ -180,7 +181,8 @@ void Send_subscriber(uint16_t data_id, uint16_t data_length, uint8_t data_size,u
 
 }
 
-
+uint64_t htonxl(uint64_t data){return __builtin_bswap64(data);}
+uint64_t ntohxl(uint64_t data){return __builtin_bswap64(data);}
 
 
 void RC_write_blank(uint16_t data_id){Send_subscriber(data_id,0,0,0,0);}

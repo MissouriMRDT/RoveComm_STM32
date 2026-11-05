@@ -522,7 +522,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     {
 
 //    	RC_write_blank(7);
-    	RC_write_u8(12,7);
+//    	RC_write_u8(12,7);
 //    	RC_write_8(9,-13);
 //    	RC_write_u16(10,300);
 //    	RC_write_16(11,-330);
@@ -530,28 +530,28 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //    	RC_write_32(13,-35000);
 //    	RC_write_float(19,10.3); //maybe working weired rounding idk
 //    	RC_write_char(20,'h');
-    	uint8_t arr[3]={5,6,7};
-    	RC_write_u8_arr(8,3,arr);
+//    	uint8_t arr[3]={5,6,7};
+//    	RC_write_u8_arr(8,3,arr);
+//
+//    	int16_t arr16[3]={-200,-300,-400};
+//    	RC_write_16_arr(10,3,arr16);
 
-    	int16_t arr16[3]={-200,-300,-400};
-    	RC_write_16_arr(10,3,arr16);
+//
+    	uint32_t period = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
+    	uint32_t pulse_width = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_2);
 
-//
-//    	uint32_t period = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
-//    	uint32_t pulse_width = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_2);
-//
-//    	float absolute_angle = 0.0f;
-//
-//    	// Prevent divide-by-zero if the encoder is unplugged or initializing
-//    	if (period > 0) {
-//    	    // REV Encoder ranges from 1 µs (0 deg) to 1024 µs (360 deg)
-//    	    // We calculate duty cycle and scale it across 360 degrees
-//    	    float duty_cycle = (float)pulse_width / (float)period;
-//
-//    	    absolute_angle = duty_cycle * 360.0f;
-//
-//    	}
-//    	RC_write_float(10,absolute_angle);
+    	float absolute_angle = 0.0f;
+
+    	// Prevent divide-by-zero if the encoder is unplugged or initializing
+    	if (period > 0) {
+    	    // REV Encoder ranges from 1 µs (0 deg) to 1024 µs (360 deg)
+    	    // We calculate duty cycle and scale it across 360 degrees
+    	    float duty_cycle = (float)pulse_width / (float)period;
+
+    	    absolute_angle = duty_cycle * 360.0f;
+
+    	}
+    	RC_write_float(10,absolute_angle);
 
 
 
