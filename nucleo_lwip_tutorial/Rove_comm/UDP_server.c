@@ -164,12 +164,16 @@ void Send_subscriber(uint16_t data_id, uint16_t data_length, uint8_t data_size,u
 			uint32_t val[data_length];
 			memcpy(val, data, sizeof(uint32_t)*data_length);
 			for(uint16_t i=0; i<data_length; i++){
-			val[i]=htonl(val[i]);}
+				val[i]=htonl(val[i]);}
 			memcpy((uint8_t *)p->payload + sizeof(RC_header_t), val, data_size*data_length);
 			break;}
-		case 8:
-
-			break;
+		case 8:{
+			uint64_t val[data_length];
+			memcpy(val, data, sizeof(uint64_t)*data_length);
+			for(uint16_t i=0; i<data_length; i++){
+				val[i]=htonxl(val[i]);}
+			memcpy((uint8_t *)p->payload + sizeof(RC_header_t), val, data_size*data_length);
+			break;}
 
 		}}
 

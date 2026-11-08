@@ -55,6 +55,9 @@ void add_subscriber(const ip_addr_t *addr);
 void remove_subscriber(const ip_addr_t *addr);
 void Send_subscriber(uint16_t data_id, uint16_t data_length, uint8_t data_size,uint8_t data_type, const void *data);
 
+uint64_t htonxl(uint64_t data);
+uint64_t ntohxl(uint64_t data);
+
 //for none
 void RC_write_blank(uint16_t data_id);
 // for single
