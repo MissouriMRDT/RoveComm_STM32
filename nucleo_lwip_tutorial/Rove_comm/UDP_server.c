@@ -11,7 +11,7 @@
 #include "main.h"
 
 
-
+volatile RC_payload_t payload_t;
 ip_addr_t substribers[14];
 ip_addr_t Zero_IP;
 struct udp_pcb *upcb;
@@ -61,8 +61,9 @@ void RC_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const 
 
 	RC_header_t hdr;
 	RC_header_t hdr_raw;
+	static RC_payload_t payload;
 
-	HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 1);
+	HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
 
 
 	pbuf_copy_partial(p, &hdr_raw, sizeof(RC_header_t),0);
@@ -71,10 +72,30 @@ void RC_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const 
 	hdr.Data_ID = ntohs(hdr_raw.Data_ID);
 	hdr.Count = ntohs(hdr_raw.Count);
 	hdr.Data_type = hdr_raw.Data_type;
+	payload.Count = ntohs(hdr_raw.Count);
+	payload.Data_type = hdr_raw.Data_type;
 
+	if(hdr.Count != 0){
+		switch(RC_DataID_converter(hdr.Data_type)){
+		case 1:{
+			HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+			pbuf_copy_partial(p, payload.from_uint8, hdr.Count, sizeof(RC_header_t));
+			break;}
+		case 2:{
+			pbuf_copy_partial(p, payload.from_uint16, hdr.Count*sizeof(uint16_t), sizeof(RC_header_t));
+			for(uint8_t i=0; i<hdr.Count;i++){
+				payload.from_int16[i]=ntohs(payload.from_int16[i]);
+			}
+			break;}
+		case 4:{
 
+			break;}
+		case 8:{
 
-
+			break;}
+		}}
+	payload_t = payload;
+	if(hdr.Data_ID<6){
 		// rovecomm standard commands
 	switch(hdr.Data_ID){
 	case 1:
@@ -90,10 +111,13 @@ void RC_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const 
 		remove_subscriber(addr);
 		break;
 
+	}}
+	else{
+		RC_functionCallack( hdr, &payload);
 	}
 
 
-
+	pbuf_free(p);
 }
 
 void add_subscriber(const ip_addr_t *addr){
@@ -120,7 +144,7 @@ void remove_subscriber(const ip_addr_t *addr){
 	for (int i =0; i<maxSubscriber; i++){
 			if (ip_addr_cmp(&substribers[i], addr)){
 				ip_addr_copy(substribers[i], Zero_IP);
-				HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+
 
 			}
 		}
@@ -150,7 +174,7 @@ void Send_subscriber(uint16_t data_id, uint16_t data_length, uint8_t data_size,u
 		if(data_length !=0){
 		switch(data_size){
 		case 1:
-			HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+
 			memcpy((uint8_t *)p->payload + sizeof(RC_header_t), data, data_length);
 			break;
 		case 2:{
@@ -184,6 +208,29 @@ void Send_subscriber(uint16_t data_id, uint16_t data_length, uint8_t data_size,u
 		pbuf_free(p);
 
 }
+
+uint8_t RC_DataID_converter(uint8_t type){
+	switch(type){
+	case 0:
+	case 1:
+	case 8:
+		return 1;
+	case 2:
+	case 3:
+		return 2;
+	case 4:
+	case 5:
+	case 6:
+		return 4;
+	case 7:
+		return 8;
+	default:
+		return 1;
+
+
+	}
+}
+
 
 uint64_t htonxl(uint64_t data){return __builtin_bswap64(data);}
 uint64_t ntohxl(uint64_t data){return __builtin_bswap64(data);}

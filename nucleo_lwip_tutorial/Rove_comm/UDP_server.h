@@ -58,6 +58,8 @@ void Send_subscriber(uint16_t data_id, uint16_t data_length, uint8_t data_size,u
 uint64_t htonxl(uint64_t data);
 uint64_t ntohxl(uint64_t data);
 
+uint8_t RC_DataID_converter(uint8_t type);
+
 //for none
 void RC_write_blank(uint16_t data_id);
 // for single

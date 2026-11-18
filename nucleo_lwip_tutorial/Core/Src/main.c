@@ -530,17 +530,17 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //    	RC_write_32(13,-35000);
 //    	RC_write_float(19,10.3); //maybe working weired rounding idk
 //    	RC_write_char(20,'h');
-    	uint8_t arr[3]={5,6,7};
-    	RC_write_u8_arr(8,3,arr);
-
-    	int16_t arr16[3]={-200,-300,-400};
-    	RC_write_16_arr(10,3,arr16);
-
-    	int32_t arr32[5]={-2000,3564,8000,34544,-857575};
-    	RC_write_32_arr(11,5,arr32);
-
-    	double arrdouble[2]={8675.58575,-285757.22};
-    	RC_write_double_arr(12,2,arrdouble);
+//    	uint8_t arr[3]={5,6,7};
+//    	RC_write_u8_arr(8,3,arr);
+//
+//    	int16_t arr16[3]={-200,-300,-400};
+//    	RC_write_16_arr(10,3,arr16);
+//
+//    	int32_t arr32[5]={-2000,3564,8000,34544,-857575};
+//    	RC_write_32_arr(11,5,arr32);
+//
+//    	double arrdouble[2]={8675.58575,-285757.22};
+//    	RC_write_double_arr(12,2,arrdouble);
 //
 //    	uint32_t period = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
 //    	uint32_t pulse_width = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_2);
@@ -562,6 +562,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 
     }
+}
+
+void RC_functionCallack(RC_header_t hdr,RC_payload_t *payload){
+	switch(hdr.Data_ID){
+	case 7:{
+		RC_write_8(8,payload->from_int8[0]);
+		break;}
+	case 9:{
+			RC_write_16(10,payload->from_int16[0]);
+		break;}
+	}
+
 }
 
 

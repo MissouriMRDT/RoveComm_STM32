@@ -34,7 +34,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "UDP_server.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -57,7 +57,7 @@ void Error_Handler(void);
 void MX_ETH_Init(void);
 
 /* USER CODE BEGIN EFP */
-
+void RC_functionCallack(RC_header_t hdr,RC_payload_t *payload);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
