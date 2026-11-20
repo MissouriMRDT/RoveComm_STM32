@@ -90,13 +90,13 @@ void RC_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const 
 		case 4:{
 			pbuf_copy_partial(p, payload.from_uint32, hdr.Count*sizeof(uint32_t), sizeof(RC_header_t));
 			for(uint8_t i=0; i<hdr.Count;i++){
-				payload.from_int32[i]=ntohs(payload.from_int32[i]);
+				payload.from_int32[i]=ntohl(payload.from_int32[i]);
 						}
 			break;}
 		case 8:{
 			pbuf_copy_partial(p, payload.from_double, hdr.Count*sizeof(double), sizeof(RC_header_t));
 			for(uint8_t i=0; i<hdr.Count;i++){
-				payload.from_double[i]=ntohs(payload.from_double[i]);
+				payload.from_double[i]=ntohxl(payload.from_double[i]);
 						}
 			break;}
 		}}
